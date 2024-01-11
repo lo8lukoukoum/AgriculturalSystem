@@ -1,6 +1,5 @@
 package com.hr.Servlet;
 
-
 import java.io.IOException;
 import java.net.URLEncoder;
 import java.util.ArrayList;
@@ -14,28 +13,58 @@ import com.hr.dao.EASYBUY_ORDERDao;
 import com.hr.entity.EASYBUY_ORDER;
 import com.hr.util.EncodeUtil;
 
+/**
+ * Servlet implementation class OrderSelServlet
+ * 订单查询 Servlet
+ */
 public class OrderSelServlet extends HttpServlet {
-@Override
-protected void service(HttpServletRequest req, HttpServletResponse resp)
-		throws ServletException, IOException {
-		int cpage=1;
-		int count=10;
-		EncodeUtil.encode(req);
-		String cp=req.getParameter("cp");
-		String id=req.getParameter("orderId");
-		String name=req.getParameter("userName");
-		name = name==null ? "" : name;
-		if(cp!=null){
-			cpage=Integer.parseInt(cp);
+	private static final long serialVersionUID = 1L;
+
+	/**
+	 * @see HttpServlet#HttpServlet()
+	 */
+	public OrderSelServlet() {
+		super();
+		// TODO Auto-generated constructor stub
+	}
+
+	/**
+	 * @see HttpServlet#service(HttpServletRequest request, HttpServletResponse response)
+	 * 处理订单查询请求
+	 */
+	protected void service(HttpServletRequest request, HttpServletResponse response)
+			throws ServletException, IOException {
+		// 初始化默认分页和每页显示条数
+		int cpage = 1;
+		int count = 10;
+
+		// 编码处理
+		EncodeUtil.encode(request);
+
+		// 获取查询参数
+		String cp = request.getParameter("cp");
+		String orderId = request.getParameter("orderId");
+		String userName = request.getParameter("userName");
+
+		// 如果参数不为空，则将字符串转为相应的数字
+		if (cp != null) {
+			cpage = Integer.parseInt(cp);
 		}
-		int tpage=EASYBUY_ORDERDao.totalPage(count,id,name);
-		ArrayList<EASYBUY_ORDER> order=EASYBUY_ORDERDao.selectAll(cpage,count,id,name);
-		req.setAttribute("order", order);
-		req.setAttribute("cpage", cpage);
-		req.setAttribute("tpage", tpage);
-		req.setAttribute("orderId", id);
-//		System.out.println(name+"----"+URLEncoder.encode(name,"utf-8"));
-		req.setAttribute("userName", URLEncoder.encode(name,"utf-8"));
-		req.getRequestDispatcher("order.jsp").forward(req, resp);
-}
+
+		// 调用 DAO 层获取总页数和订单列表
+		int totalPage = EASYBUY_ORDERDao.totalPage(count, orderId, userName);
+		ArrayList<EASYBUY_ORDER> orderList = EASYBUY_ORDERDao.selectAll(cpage, count, orderId, userName);
+
+		// 将查询结果设置到请求属性中
+		request.setAttribute("order", orderList);
+		request.setAttribute("cpage", cpage);
+		request.setAttribute("tpage", totalPage);
+		request.setAttribute("orderId", orderId);
+
+		// 对用户名进行 URL 编码，防止中文乱码
+		request.setAttribute("userName", URLEncoder.encode(userName, "utf-8"));
+
+		// 转发请求到 order.jsp 页面
+		request.getRequestDispatcher("order.jsp").forward(request, response);
+	}
 }

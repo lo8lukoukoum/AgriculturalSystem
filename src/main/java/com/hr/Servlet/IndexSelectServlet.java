@@ -17,6 +17,8 @@ import com.hr.entity.EASYBUY_PRODUCT;
 import com.hr.entity.EASYBUY_PRODUCT_CATEGORY;
 
 public class IndexSelectServlet extends HttpServlet {
+
+	// 处理客户端请求的方法
 	@SuppressWarnings("unchecked")
 	@Override
 	protected void service(HttpServletRequest req, HttpServletResponse resp)
@@ -47,7 +49,7 @@ public class IndexSelectServlet extends HttpServlet {
 
 		// 从session中获取最近浏览的商品id
 		ArrayList<Integer> ids = (ArrayList<Integer>)session.getAttribute("ids");
-		if(ids!=null){
+		if(ids != null){
 			// 根据id查询最近浏览的商品信息
 			ArrayList<EASYBUY_PRODUCT> lastlylist = EASYBUY_PRODUCTDao.selectById(ids);
 			req.setAttribute("lastlylist", lastlylist);

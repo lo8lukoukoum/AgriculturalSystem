@@ -1,6 +1,5 @@
 package com.hr.Servlet;
 
-
 import java.io.IOException;
 import java.util.ArrayList;
 
@@ -16,7 +15,17 @@ import com.hr.entity.EASYBUY_PRODUCT;
 import com.hr.entity.EASYBUY_PRODUCT_CATEGORY;
 import com.hr.util.EncodeUtil;
 
+/**
+ * Servlet implementation class SelectProductListServlet
+ * 查询商品列表 Servlet
+ */
 public class SelectProductListServlet extends HttpServlet {
+	private static final long serialVersionUID = 1L;
+
+	/**
+	 * @see HttpServlet#service(HttpServletRequest request, HttpServletResponse response)
+	 * 处理查询商品列表请求
+	 */
 	@Override
 	protected void service(HttpServletRequest req, HttpServletResponse resp)
 			throws ServletException, IOException {
@@ -25,18 +34,19 @@ public class SelectProductListServlet extends HttpServlet {
 		req.setAttribute("flist", flist);
 		ArrayList<EASYBUY_PRODUCT_CATEGORY> clist = EASYBUY_PRODUCT_CATEGORYDao.selectChild();
 		req.setAttribute("clist", clist);
+
 		HttpSession session = req.getSession();
-		//查询最近浏览的商品
-		ArrayList<Integer> ids = (ArrayList<Integer>)session.getAttribute("ids");
-		if(ids!=null){
+		// 查询最近浏览的商品
+		ArrayList<Integer> ids = (ArrayList<Integer>) session.getAttribute("ids");
+		if (ids != null) {
 			ArrayList<EASYBUY_PRODUCT> lastlylist = EASYBUY_PRODUCTDao.selectById(ids);
 			req.setAttribute("lastlylist", lastlylist);
 		}
-		
+
 		int cpage = 1;//当前页数
 		int count = 8;//每页行数
 		String cp = req.getParameter("cp");
-		if(cp!=null){//如果页面上传递了页数,将当前页数改变掉
+		if (cp != null) {//如果页面上传递了页数,将当前页数改变掉
 			cpage = Integer.parseInt(cp);
 		}
 		//查出总页数
@@ -45,28 +55,28 @@ public class SelectProductListServlet extends HttpServlet {
 		String cid = req.getParameter("cid");
 		String name = req.getParameter("name");
 		ArrayList<EASYBUY_PRODUCT> list = null;
-		if(fid==null&&cid==null){
+		if (fid == null && cid == null) {
 			list = EASYBUY_PRODUCTDao.selectAll(cpage, count);
 			req.setAttribute("title", "全部商品");
 			tpage = EASYBUY_PRODUCTDao.totalPage(count);
 		}
-		if(fid!=null){
+		if (fid != null) {
 			int id = Integer.parseInt(fid);
 			list = EASYBUY_PRODUCTDao.selectAllByFid(cpage, count, id);
 			tpage = EASYBUY_PRODUCTDao.totalPageByFid(count, id);
 			req.setAttribute("title", EASYBUY_PRODUCT_CATEGORYDao.selectById(id).getEPC_NAME());
 		}
-		if(cid!=null){
+		if (cid != null) {
 			int id = Integer.parseInt(cid);
 			list = EASYBUY_PRODUCTDao.selectAllByCid(cpage, count, id);
 			tpage = EASYBUY_PRODUCTDao.totalPageByCid(count, id);
 			req.setAttribute("title", EASYBUY_PRODUCT_CATEGORYDao.selectById(id).getEPC_NAME());
 		}
-		if(name!=null){
+		if (name != null) {
 			list = EASYBUY_PRODUCTDao.selectAllByName(name);
 			tpage = EASYBUY_PRODUCTDao.totalPageByName(count, name);
-			req.setAttribute("title", "搜索商品："+name);
-		} 
+			req.setAttribute("title", "搜索商品：" + name);
+		}
 		req.setAttribute("list", list);
 		//当前页数
 		req.setAttribute("cpage", cpage);

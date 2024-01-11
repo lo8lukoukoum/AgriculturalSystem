@@ -1,6 +1,5 @@
 package com.hr.Servlet;
 
-
 import java.io.IOException;
 import java.io.PrintWriter;
 
@@ -13,22 +12,25 @@ import com.hr.dao.EASYBUY_NEWSDao;
 import com.hr.util.EncodeUtil;
 
 public class NewsDelServlet extends HttpServlet {
-@Override
-protected void service(HttpServletRequest req, HttpServletResponse resp)
-		throws ServletException, IOException {
+
+	// 处理客户端请求的方法
+	@Override
+	protected void service(HttpServletRequest req, HttpServletResponse resp)
+			throws ServletException, IOException {
 		EncodeUtil.encode(req);
-		String id=req.getParameter("id");
-		int count=EASYBUY_NEWSDao.del(Integer.parseInt(id));
-		if(count>0){
+		String id = req.getParameter("id");
+		int count = EASYBUY_NEWSDao.del(Integer.parseInt(id));
+		if (count > 0) {
+			// 删除成功，重定向到管理结果页面
 			resp.sendRedirect("manage-result.jsp");
-		}else{
+		} else {
 			resp.setContentType("text/html;charset=utf-8");
-			PrintWriter out=resp.getWriter();
+			PrintWriter out = resp.getWriter();
 			out.print("<script>");
 			out.print("alert('删除失败');");
 			out.print("location.href='newsselect'");
 			out.print("</script>");
 			out.close();
 		}
-}
+	}
 }
